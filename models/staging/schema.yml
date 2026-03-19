@@ -1,0 +1,121 @@
+version: 2
+
+sources:
+  - name: olist_raw_data
+    database: ecommerce-analytics-490306
+    schema: olist_raw_data
+    description: "Raw Olist ecommerce dataset"
+
+    tables:
+      - name: orders
+        description: "Raw orders table"
+        columns:
+          - name: order_id
+            tests:
+              - not_null
+          - name: order_status
+            tests:
+              - accepted_values:
+                  values: ['created','approved','invoiced','processing','shipped','delivered','canceled','unavailable']
+          - name: customer_id
+            tests:
+              - not_null
+
+      - name: customers
+        description: "Customer data"
+        columns:
+          - name: customer_id
+            tests:
+              - unique
+              - not_null
+
+      - name: products
+        description: "Product master data"
+        columns:
+          - name: product_id
+            tests:
+              - unique
+              - not_null
+
+      - name: order_items
+        description: "Order items table"
+        columns:
+          - name: order_id
+            tests:
+              - not_null
+          - name: product_id
+            tests:
+              - not_null
+          - name: seller_id
+            tests:
+              - not_null
+
+      - name: order_payments
+        description: "Payments info"
+        columns:
+          - name: order_id
+            tests:
+              - not_null
+          - name: payment_type
+            tests:
+              - accepted_values:
+                  values: ['credit_card','boleto','voucher','debit_card','not_defined']
+          - name: payment_value
+            tests:
+              - not_null
+
+      - name: order_reviews
+        description: "Customer reviews, may have jagged rows"
+        columns:
+          - name: review_id
+            tests:
+              - not_null
+          - name: order_id
+            tests:
+              - not_null
+
+      - name: sellers
+        description: "Seller info"
+        columns:
+          - name: seller_id
+            tests:
+              - unique
+              - not_null
+
+      - name: geolocation
+        identifier: geolocations
+        description: "Geolocation table"
+        columns:
+          - name: geolocation_zip_code_prefix
+            tests:
+              - not_null
+
+      - name: product_category
+        description: "Raw product category table with string fields"
+models:
+  - name: stg_order_reviews
+    description: "Cleaned and deduplicated order reviews"
+    columns:
+      - name: review_id
+        tests:
+          - not_null
+      - name: order_id
+        tests:
+          - not_null
+      - name: review_score
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4, 5]   # ← integer
+              quote_identifiers: false
+
+models:
+  - name: stg_product_category
+    description: "Renamed product category columns"
+    columns:
+      - name: product_category_name
+        tests:
+          - not_null
+      - name: product_category_name_english
+        tests:
+          - not_null

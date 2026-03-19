@@ -1,0 +1,45 @@
+models:
+  - name: int_orders_enriched
+    description: "Enriched orders with items, payments, and reviews. One row per order-item."
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+      - name: product_id
+        tests:
+          - not_null
+      - name: seller_id
+        tests:
+          - not_null
+      - name: price
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: freight_value
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: payment_types
+        tests:
+          - not_null:
+              severity: warn
+
+          - accepted_values:
+              values: ['credit_card, boleto', 'credit_card', 'boleto', 'voucher', 'debit_card', 'not_defined']
+              severity: warn  
+      - name: avg_review_score
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+              max_value: 5
+      - name: total_item_amount
+        tests:
+          - not_null
+      - name: order_date
+        tests:
+          - not_null

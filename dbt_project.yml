@@ -1,0 +1,28 @@
+name: 'olist_dbt_project'
+version: '1.0'
+config-version: 2
+
+profile: 'olist_dbt_project'
+
+# Paths
+model-paths: ["models"]
+analysis-paths: ["analysis"]
+test-paths: ["tests"]
+seed-paths: ["data"]
+macro-paths: ["macros"]
+
+# Target paths
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_modules"
+
+# Default materializations
+models:
+  olist_dbt_project:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table

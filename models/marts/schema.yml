@@ -1,0 +1,180 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: "Customer dimension table with unique customers"
+    columns:
+      - name: customer_id
+        description: "Unique customer identifier (per order)"
+        tests:
+          - unique
+          - not_null
+      
+      - name: customer_unique_id
+        description: "Unique customer identifier across platform"
+        tests:
+          - unique
+          - not_null
+      
+      - name: customer_city
+        description: "Customer city"
+        tests:
+          - not_null
+      
+      - name: customer_state
+        description: "Customer state (2-letter code)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']
+      
+      - name: customer_region
+        description: "Derived Brazilian region"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Southeast', 'South', 'Northeast', 'Other']
+
+  - name: dim_products
+    description: "Product dimension table"
+    columns:
+      - name: product_id
+        description: "Unique product identifier"
+        tests:
+          - unique
+          - not_null:
+              severity: warn 
+      
+      - name: product_category_name
+        description: "Product category in Portuguese"
+        tests:
+          - not_null
+      
+      - name: product_category_name_english
+        description: "Product category in English"
+        tests:
+          - not_null
+      
+      - name: product_name_length
+        description: "Length of product name"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 100
+      
+      - name: product_weight_g
+        description: "Product weight in grams"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 50000
+      
+      - name: weight_category
+        description: "Light/Medium/Heavy classification"
+        tests:
+          - accepted_values:
+              values: ['Light', 'Medium', 'Heavy']
+
+  - name: dim_sellers
+    description: "Seller dimension table"
+    columns:
+      - name: seller_id
+        description: "Unique seller identifier"
+        tests:
+          - unique
+          - not_null:
+              severity: warn 
+      
+      - name: seller_city
+        description: "Seller city"
+        tests:
+          - not_null
+      
+      - name: seller_state
+        description: "Seller state"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']
+      
+      - name: seller_region
+        description: "Derived Brazilian region"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Southeast', 'South', 'Northeast', 'Central-West', 'North', 'Other']
+
+  - name: fct_orders
+    description: "Orders fact table"
+    columns:
+      - name: order_id
+        description: "Unique order identifier"
+        tests:
+          - unique
+          - not_null
+      
+      - name: customer_id
+        description: "Foreign key to dim_customers"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+              severity: warn
+      
+      - name: product_id
+        description: "Foreign key to dim_products"
+        tests:
+          - not_null:
+              severity: warn
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+              severity: warn
+      
+      - name: seller_id
+        description: "Foreign key to dim_sellers"
+        tests:
+          - not_null:
+              severity: warn
+          - relationships:
+              to: ref('dim_sellers')
+              field: seller_id
+              severity: warn
+      
+      - name: price
+        description: "Item price"
+        tests:
+          - not_null:
+              severity: warn
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 15000
+      
+      - name: freight_value
+        description: "Shipping cost"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 2000
+      
+      - name: payment_type
+        description: "Type of payment"
+        tests:
+          - accepted_values:
+              values: ['credit_card', 'boleto', 'voucher', 'debit_card', 'not_defined']
+      
+      - name: review_score
+        description: "Customer review score (1-5)"
+        tests:
+          - accepted_values:
+                values: ['1', '2', '3', '4', '5']  
+      
+      - name: order_date
+        description: "Date of order"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: "cast('2016-01-01' as timestamp)"
+              max_value: "cast('2018-12-31' as timestamp)"
+  
