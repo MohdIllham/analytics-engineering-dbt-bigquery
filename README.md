@@ -1,25 +1,28 @@
-# Olist Analytics Engineering Project (dbt + BigQuery)
+#  Analytics Engineering Project (dbt + BigQuery)
 
-## Overview
+🚀 Overview
 
-This project demonstrates an end-to-end **Analytics Engineering workflow** using the public **Olist e-commerce dataset**.
-The goal of the project is to transform raw operational data into a **clean analytical data model** using **dbt and BigQuery**.
+This project showcases an end-to-end Analytics Engineering workflow using the public Olist e-commerce dataset.
 
-The project follows a typical modern data stack approach:
+The goal? Transform raw, messy operational data into clean, analytics-ready tables using dbt + BigQuery, structured in a star schema ideal for dashboards and BI reporting.
+
+The workflow follows a modern data stack pattern:
 
 Raw Data → Staging → Intermediate → Data Marts (Dimensions & Facts)
 
-This repository shows how raw data can be transformed into a structured **star schema** that is ready for analytics and BI dashboards.
+This repo demonstrates how data moves from raw sources to structured insights, highlighting best practices in data modeling, testing, and documentation.
+that is ready for analytics and BI dashboards.
 
 ---
 
 ## Tech Stack
 
-* **dbt** – data transformation and modeling
-* **Google BigQuery** – data warehouse
-* **SQL** – transformations
-* **dbt tests** – data quality checks
-* **GitHub** – version control
+* **![DuckDB](https://img.shields.io/badge/DuckDB-0.9.2-F2C94C?style=for-the-badge)** – data transformation and modeling
+* **![BigQuery](https://img.shields.io/badge/Google%20BigQuery-669DF6?style=for-the-badge&logo=googlebigquery&logoColor=white)** – data warehouse
+
+* **![SQL](https://img.shields.io/badge/SQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)** – transformations  
+* **![dbt](https://img.shields.io/badge/dbt-1.11.7-EF4C7F?style=for-the-badge)** – data quality checks  
+**![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)** – version control
 
 ---
 
@@ -126,11 +129,11 @@ dbt automatically generates data lineage based on `ref()` and `source()` relatio
 Example flow:
 
 Raw Sources
-↓
+ →
 Staging Models
-↓
+ →
 Intermediate Models
-↓
+ →
 Dimension & Fact Tables
 
 This helps track where data comes from and makes debugging easier.
